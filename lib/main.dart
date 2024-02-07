@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = new QuizBrain();
 
@@ -39,6 +40,47 @@ class _QuizPageState extends State<QuizPage> {
 
   List<Icon> scoreKeeper = [];
 
+  void checkAnswer(bool userPick) {
+    setState(() {
+      if (quizBrain.isFinished()) {
+        Alert(
+          context: context,
+          title: "Awesome",
+          desc: "Quiz is Over.",
+          buttons: [
+            DialogButton(
+              child: Text(
+                "Restart",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () {
+                setState(() {
+                  quizBrain.reset();
+                  scoreKeeper.clear();
+                });
+              },
+              width: 120,
+            )
+          ],
+        ).show();
+      } else {
+        if (userPick == true) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+      }
+    });
+
+    quizBrain.nextQuestion();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -77,12 +119,7 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 setState(() {
                   bool correctAns = quizBrain.getAnswerText();
-                  if (correctAns == true) {
-                    print('user is correct');
-                  } else {
-                    print('user is wrong');
-                  }
-                  quizBrain.nextQuestion();
+                  checkAnswer(correctAns);
                 });
               },
             ),
@@ -104,12 +141,7 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 setState(() {
                   bool correctAns = quizBrain.getAnswerText();
-                  if (correctAns == false) {
-                    print('user is correct');
-                  } else {
-                    print('user is wrong');
-                  }
-                  quizBrain.nextQuestion();
+                  checkAnswer(correctAns);
                 });
               },
             ),
